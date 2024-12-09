@@ -1,11 +1,11 @@
-from py_modul import readlist
 from openpyxl import Workbook
 from openpyxl import load_workbook
 from openpyxl.worksheet.page import PageMargins
 from openpyxl.styles import NamedStyle, Border, Side, Alignment, Font
 from pathlib import WindowsPath
-from pathlib import Path
 import argparse
+from csv import reader
+from json import load
 
 
 
@@ -14,13 +14,13 @@ import argparse
 # Из файла list.txt берем название устройства для заполнения данных
 #DIR_VP = 'C:/Users/tsarev.NIIAEM/Documents/2023/biab200/vp/'
 #NAME_VP = 'VP200.csv'
-DIR_VP = 'C:/Users/tsarev.NIIAEM/Documents/2023/biab200/vp/'
-NAME_VP = 'VP200.csv'
-NAME_FILE = 'list.csv'
+DIR_VP = ''
+NAME_VP = 'vp_biab100li.csv'
+NAME_FILE = 'biab100li.json'
 DOGOVOR = 'Договор: 1526730203022214000241307/2914/21-EП-732/724/610'
 IZDELIE = 'Изделие: БИАБ-200ЛИ   ГБНК.566111.024   зав. № 10, 11'
 NAME_KOMPL = 'komlpl.xlsx'
-DIR_KM = 'C:/Users/tsarev.NIIAEM/Documents/2023/python_project/VPtoKomplekt/'
+DIR_KM = ''
 
 def cell_style(ws, row, col, al='left', clr='000000', wr=False, sz = 12):  # примменить стиль к ячейке
         bd = Side(style='thin', color=clr)
@@ -63,6 +63,22 @@ def shablon(ws, start=1):
         cell_style(ws, start+7, j, 'center', wr=True)
         ws.cell(row=start+7, column=j, value=val_text[j-1])
 
+def generate_data_pe (vp, gbnk):
+    '''read vp file and make data for pe3 doc'''
+    m = WindowsPath(__file__)
+    t_name = vp.stem
+    t = vp.with_name(t_name[3:] + ".json")
+    #t = vp[3:]+".json"
+    with open(t, "r", encoding="utf-8") as fh:
+        dev_json = load(fh) # download gbnk from file
+        #print(dev_json)
+    #key = gbnk
+    list_from_dict = list(dev_json.items())
+    #for key in dev_json:
+        #print (key, dev_json[key])
+    return (list_from_dict)
+
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
@@ -70,8 +86,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     gbnk = args.gbnk
     #print(gbnk)
-    p = WindowsPath(DIR_VP+NAME_FILE)
-    name_dev = readlist.namedev_list(p, gbnk)
+    p = WindowsPath(NAME_VP)
+    name_dev = generate_data_pe(p, gbnk)
+    print(name_dev)
     wb = Workbook()
     ws = wb.active
     ws.page_margins = PageMargins(0.5, 0.2, 0.2, 0.2)
@@ -80,14 +97,13 @@ if __name__ == "__main__":
     ws.column_dimensions['C'].width = 15
     ws.column_dimensions['D'].width = 13
     start = 1
-    
     for n_dev_gbnk, n_dev_name in name_dev:
         #print(n_dev_gbnk)
         shablon(ws, start)
         cwd = WindowsPath(DIR_VP+NAME_VP)
-        p = Path(cwd)
+        p = WindowsPath(cwd)
         f = open(p)
-        a1 = [[line.split(';')[4], line.split(';')[11]] for line in f if line.split(';')[9] == n_dev_gbnk]
+        a1 = [[line.split(';')[4], line.split(';')[10]] for line in f if line.split(';')[5] == n_dev_gbnk]
         # ws.page_setup.paperSize = 9
         # ws.page_setup.orientation = 'portrait'
         page = 1 #номер страницы
