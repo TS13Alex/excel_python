@@ -59,8 +59,8 @@ def listing_pe (n_gbnk, vp):
         rowreader = reader(vpcsvfile, delimiter=';')
         list_elem = []
         for row in rowreader:
-            data_pe = [row[3], row[4], row[10], row[12]]
-            if row[3] != '' and row[9] == n_gbnk and data_pe not in list_elem:
+            data_pe = [row[3], row[4], row[6], row[8]]
+            if row[3] != '' and row[5] == n_gbnk and data_pe not in list_elem:
                 list_elem.append(data_pe)
     return list_elem
 
