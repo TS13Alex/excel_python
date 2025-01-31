@@ -11,7 +11,7 @@ NROW = 57 #total row 5 mm in 585 mm
 def setup_row(ws, total_list:int, nrow:int):
     '''setup row height'''
     all_rows = nrow * total_list #total row in all lists
-    row_heigh_5 = 14.6 #height row 5 мм
+    row_heigh_5 = 14.15 #height row 5 мм
     for i in range (1, all_rows + 1):
         ws.row_dimensions[i].height = row_heigh_5 #make all row in 5 мм
 
